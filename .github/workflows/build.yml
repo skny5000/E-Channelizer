@@ -36,12 +36,12 @@ jobs:
       # 3. Restore packages
       - name: Restore dependencies
         run: dotnet restore EChannelizer.csproj
-        working-directory: E-Channelizer-Clone
+        working-directory: E-Channelizer-Clone-Clone
 
       # 4. Build
       - name: Build project
         run: dotnet build EChannelizer.csproj -c ${{ env.CONFIGURATION }} --no-restore
-        working-directory: E-Channelizer-Clone
+        working-directory: E-Channelizer-Clone-Clone
 
       # 5. Publish Self-Contained (Single File)
       - name: Publish self-contained executable
@@ -56,7 +56,7 @@ jobs:
             -p:DebugSymbols=false `
             -p:EnableCompressionInSingleFile=true `
             -o publish/selfcontained
-        working-directory: E-Channelizer-Clone
+        working-directory: E-Channelizer-Clone-Clone
 
       # 6. Publish Framework-Dependent (Smaller)
       - name: Publish framework-dependent executable
@@ -70,7 +70,7 @@ jobs:
             -p:DebugType=None `
             -p:DebugSymbols=false `
             -o publish/portable
-        working-directory: E-Channelizer-Clone
+        working-directory: E-Channelizer-Clone-Clone
 
       # 7. Verify outputs
       - name: Verify build outputs
@@ -85,7 +85,7 @@ jobs:
           Get-ChildItem publish/selfcontained/E-Channelizer.exe | Select-Object Name, @{Name="Size(MB)";Expression={[math]::Round($_.Length/1MB,1)}}
           Get-ChildItem publish/portable/E-Channelizer.exe | Select-Object Name, @{Name="Size(MB)";Expression={[math]::Round($_.Length/1MB,1)}}
         shell: pwsh
-        working-directory: E-Channelizer-Clone
+        working-directory: E-Channelizer-Clone-Clone
 
       # 8. Upload artifacts (للرفع في Actions artifacts)
       - name: Upload self-contained executable

@@ -105,7 +105,7 @@ jobs:
       # 9. Create Release (فقط عند tag)
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: E-Channelizer ${{ github.ref_name }}
           tag_name: ${{ github.ref }}
@@ -180,7 +180,7 @@ jobs:
 
       - name: Add Installer to Release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref }}
           files: installer-output/*.exe

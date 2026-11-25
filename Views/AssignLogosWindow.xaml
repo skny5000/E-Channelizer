@@ -1,0 +1,86 @@
+<controls:MetroWindow x:Class="EChannelizer.Views.AssignLogosWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="Assign Logos"
+        Height="600"
+        Width="900"
+        WindowStartupLocation="CenterOwner"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}">
+
+    <controls:MetroWindow.DataContext>
+        <local:AssignLogosViewModel />
+    </controls:MetroWindow.DataContext>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Logos Folder -->
+        <GroupBox Grid.Row="0" Header="Logos Folder" Margin="0,0,0,16">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Text="{Binding LogosFolder, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" VerticalAlignment="Center" IsReadOnly="True" />
+                <Button Grid.Column="1" Content="Browse..." Command="{Binding BrowseLogosFolderCommand}" Margin="8,0,0,0" Padding="12,4" VerticalAlignment="Center" />
+                <Button Grid.Column="2" Content="Scan Logos" Command="{Binding ScanLogosCommand}" Margin="8,0,0,0" Padding="12,4" VerticalAlignment="Center" />
+            </Grid>
+        </GroupBox>
+
+        <!-- Channels with Logo Status -->
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Channels}" SelectedItem="{Binding SelectedChannel, Mode=TwoWay}"
+                  AutoGenerateColumns="False" SelectionMode="Single"
+                  CanUserAddRows="False" CanUserDeleteRows="False"
+                  Style="{StaticResource MetroDataGrid}">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Logo" Width="60" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border Width="40" Height="40" BorderBrush="{DynamicResource MahApps.Brushes.Gray5}" BorderThickness="1" Margin="4">
+                                <Image Source="{Binding LogoPath}" Stretch="Uniform" />
+                            </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Channel" Binding="{Binding Channel.Name}" Width="*" IsReadOnly="True" />
+                <DataGridTextColumn Header="Type" Binding="{Binding Channel.ServiceType}" Width="80" IsReadOnly="True" />
+                <DataGridTextColumn Header="Satellite" Binding="{Binding Channel.Satellite}" Width="100" IsReadOnly="True" />
+                <DataGridCheckBoxColumn Header="Has Logo" Binding="{Binding HasLogo}" Width="80" IsReadOnly="True" />
+                <DataGridTemplateColumn Header="Action" Width="120" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Assign" Command="{Binding DataContext.AssignSelectedLogoCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Padding="8,2" Margin="2,0" />
+                                <Button Content="Clear" Command="{Binding DataContext.ClearSelectedLogoCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" Padding="8,2" Margin="2,0" Foreground="{DynamicResource MahApps.Brushes.Red}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Stats & Actions -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Download Missing" Command="{Binding DownloadMissingLogosCommand}" Width="140" Margin="0,0,8,0" />
+            <Button Content="Export Logos" Command="{Binding ExportLogosCommand}" Width="120" Margin="0,0,8,0" />
+            <Button Content="Cleanup Unused" Command="{Binding CleanupUnusedCommand}" Width="130" Margin="0,0,8,0" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="0,0,8,0" />
+            <Button Content="Apply" Command="{Binding OKCommand}" Width="100"
+                    Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}" IsDefault="True" />
+        </StackPanel>
+
+        <!-- Stats -->
+        <TextBlock Grid.Row="2" Text="{Binding AssignedCount, StringFormat='Assigned: {0}  Missing: {1}'}" VerticalAlignment="Center" Margin="0,0,16,0" />
+    </Grid>
+</controls:MetroWindow>

@@ -1,0 +1,59 @@
+# Dependabot configuration for automatic dependency updates
+# See: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # .NET dependencies (NuGet)
+  - package-ecosystem: "nuget"
+    directory: "E-Channelizer-Clone"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "nuget"
+    commit-message:
+      prefix: "[NuGet]"
+    open-pull-requests-limit: 10
+    groups:
+      mahapps:
+        patterns:
+          - "MahApps.Metro*"
+        update-types:
+          - "minor"
+          - "patch"
+      communitytoolkit:
+        patterns:
+          - "CommunityToolkit.*"
+        update-types:
+          - "minor"
+          - "patch"
+      logging:
+        patterns:
+          - "NLog*"
+          - "Microsoft.Extensions.Logging*"
+        update-types:
+          - "minor"
+          - "patch"
+      json:
+        patterns:
+          - "Newtonsoft.Json*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "[Actions]"

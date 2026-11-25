@@ -1,0 +1,102 @@
+<controls:MetroWindow x:Class="EChannelizer.Views.AssignEpgWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="Assign EPG"
+        Height="600"
+        Width="900"
+        WindowStartupLocation="CenterOwner"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}">
+
+    <controls:MetroWindow.DataContext>
+        <local:AssignEpgViewModel />
+    </controls:MetroWindow.DataContext>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- XMLTV File -->
+        <GroupBox Grid.Row="0" Header="XMLTV Source" Margin="0,0,0,16">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Text="{Binding XmlTvPath, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" VerticalAlignment="Center" IsReadOnly="True" />
+                <Button Grid.Column="1" Content="Browse..." Command="{Binding LoadXmlTvCommand}" Margin="8,0,0,0" Padding="12,4" VerticalAlignment="Center" />
+                <Button Grid.Column="2" Content="Auto-map" Command="{Binding AutoMapCommand}" Margin="8,0,0,0" Padding="12,4" VerticalAlignment="Center" />
+            </Grid>
+        </GroupBox>
+
+        <!-- Split Panel -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- XMLTV Channels -->
+            <GroupBox Grid.Column="0" Header="XMLTV Channels">
+                <DataGrid ItemsSource="{Binding XmlTvChannels}" SelectedItem="{Binding SelectedXmlChannel}"
+                          AutoGenerateColumns="False" SelectionMode="Single"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          Style="{StaticResource MetroDataGrid}">
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Header="Mapped" Binding="{Binding IsMapped}" Width="60" IsReadOnly="True" />
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+
+            <!-- Mapping Buttons -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0">
+                <Button Content="Map ►" Command="{Binding MapSelectedCommand}" Width="80" Margin="0,0,0,8" />
+                <Button Content="◄ Unmap" Command="{Binding UnmapSelectedCommand}" Width="80" Margin="0,0,0,8" />
+                <Separator Margin="0,8" />
+                <Button Content="Clear All" Command="{Binding ClearAllMappingsCommand}" Width="80" Foreground="{DynamicResource MahApps.Brushes.Red}" />
+            </StackPanel>
+
+            <!-- Channels -->
+            <GroupBox Grid.Column="2" Header="Channels">
+                <DataGrid ItemsSource="{Binding Channels}" SelectedItem="{Binding SelectedChannel}"
+                          AutoGenerateColumns="False" SelectionMode="Single"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          Style="{StaticResource MetroDataGrid}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Type" Binding="{Binding ServiceType}" Width="80" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Satellite" Binding="{Binding Satellite}" Width="100" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </Grid>
+
+        <!-- Stats -->
+        <GroupBox Grid.Row="1" Grid.RowSpan="2" Header="Mapping Statistics" Margin="8,0,0,0" VerticalAlignment="Bottom">
+            <StackPanel Margin="8">
+                <TextBlock Text="{Binding MappedCount, StringFormat='Mapped: {0}'}" Margin="0,2" FontWeight="Bold" />
+                <TextBlock Text="{Binding UnmappedXmlCount, StringFormat='Unmapped XMLTV: {0}'}" Margin="0,2" />
+                <TextBlock Text="{Binding UnmappedChannelCount, StringFormat='Unmapped Channels: {0}'}" Margin="0,2" />
+            </StackPanel>
+        </GroupBox>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="0,0,8,0" />
+            <Button Content="Apply" Command="{Binding OKCommand}" Width="100"
+                    Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}" IsDefault="True" />
+        </StackPanel>
+    </Grid>
+</controls:MetroWindow>

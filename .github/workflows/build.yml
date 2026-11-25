@@ -1,0 +1,217 @@
+name: Build E-Channelizer
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:  # يسمح بالبناء اليدوي من واجهة GitHub
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  CONFIGURATION: 'Release'
+  RUNTIME: 'win-x64'
+
+jobs:
+  build:
+    name: Build & Publish
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      # 1. Checkout الكود
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # مطلوب لـ GitVersion
+
+      # 2. Setup .NET
+      - name: Setup .NET ${{ env.DOTNET_VERSION }}
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+          cache: true
+
+      # 3. Restore packages
+      - name: Restore dependencies
+        run: dotnet restore EChannelizer.csproj
+        working-directory: E-Channelizer-Clone
+
+      # 4. Build
+      - name: Build project
+        run: dotnet build EChannelizer.csproj -c ${{ env.CONFIGURATION }} --no-restore
+        working-directory: E-Channelizer-Clone
+
+      # 5. Publish Self-Contained (Single File)
+      - name: Publish self-contained executable
+        run: |
+          dotnet publish EChannelizer.csproj `
+            -c ${{ env.CONFIGURATION }} `
+            -r ${{ env.RUNTIME }} `
+            --self-contained true `
+            -p:PublishSingleFile=true `
+            -p:PublishTrimmed=false `
+            -p:DebugType=None `
+            -p:DebugSymbols=false `
+            -p:EnableCompressionInSingleFile=true `
+            -o publish/selfcontained
+        working-directory: E-Channelizer-Clone
+
+      # 6. Publish Framework-Dependent (Smaller)
+      - name: Publish framework-dependent executable
+        run: |
+          dotnet publish EChannelizer.csproj `
+            -c ${{ env.CONFIGURATION }} `
+            -r ${{ env.RUNTIME }} `
+            --self-contained false `
+            -p:PublishSingleFile=true `
+            -p:PublishTrimmed=false `
+            -p:DebugType=None `
+            -p:DebugSymbols=false `
+            -o publish/portable
+        working-directory: E-Channelizer-Clone
+
+      # 7. Verify outputs
+      - name: Verify build outputs
+        run: |
+          echo "=== Self-contained ==="
+          ls -la publish/selfcontained/
+          echo ""
+          echo "=== Portable ==="
+          ls -la publish/portable/
+          echo ""
+          echo "=== File sizes ==="
+          Get-ChildItem publish/selfcontained/E-Channelizer.exe | Select-Object Name, @{Name="Size(MB)";Expression={[math]::Round($_.Length/1MB,1)}}
+          Get-ChildItem publish/portable/E-Channelizer.exe | Select-Object Name, @{Name="Size(MB)";Expression={[math]::Round($_.Length/1MB,1)}}
+        shell: pwsh
+        working-directory: E-Channelizer-Clone
+
+      # 8. Upload artifacts (للرفع في Actions artifacts)
+      - name: Upload self-contained executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: E-Channelizer-SelfContained
+          path: E-Channelizer-Clone/publish/selfcontained/E-Channelizer.exe
+          retention-days: 30
+
+      - name: Upload portable executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: E-Channelizer-Portable
+          path: E-Channelizer-Clone/publish/portable/E-Channelizer.exe
+          retention-days: 30
+
+      # 9. Create Release (فقط عند tag)
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: E-Channelizer ${{ github.ref_name }}
+          tag_name: ${{ github.ref }}
+          body: |
+            ## E-Channelizer ${{ github.ref_name }}
+
+            ### 📥 Downloads
+            - **Self-Contained** (No .NET required, ~85 MB): `E-Channelizer.exe`
+            - **Portable** (Requires .NET 8 Runtime, ~20 MB): `E-Channelizer-Portable.exe`
+
+            ### 📋 Changes
+            See [CHANGELOG.md](CHANGELOG.md) for details.
+
+            ### 🖥 System Requirements
+            - Windows 10 (1809+) / Windows 11 (x64)
+            - 4 GB RAM minimum
+            - 200 MB free disk space
+
+            ### 📖 Documentation
+            - [README](https://github.com/${{ github.repository }}#readme)
+            - [Build Instructions](BUILD_INSTRUCTIONS.md)
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          files: |
+            E-Channelizer-Clone/publish/selfcontained/E-Channelizer.exe
+            E-Channelizer-Clone/publish/portable/E-Channelizer.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Job إضافي: بناء المثبت (Inno Setup)
+  installer:
+    name: Build Installer (Inno Setup)
+    runs-on: windows-latest
+    needs: build
+    timeout-minutes: 15
+    if: startsWith(github.ref, 'refs/tags/')  # فقط عند إصدار رسمي
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download self-contained build
+        uses: actions/download-artifact@v4
+        with:
+          name: E-Channelizer-SelfContained
+          path: artifacts/selfcontained
+
+      - name: Install Inno Setup
+        run: |
+          choco install innosetup --version 6.2.2 -y
+          echo "C:\Program Files (x86)\Inno Setup 6" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Build Installer
+        run: |
+          # نسخ الملف التنفيذي لمجلد النشر المتوقع من قبل الـ .iss
+          New-Item -ItemType Directory -Force -Path E-Channelizer-Clone/publish/win-x64-selfcontained
+          Copy-Item artifacts/selfcontained/E-Channelizer.exe -Destination E-Channelizer-Clone/publish/win-x64-selfcontained/
+
+          # تشغيل Inno Setup Compiler
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" E-Channelizer-Clone/E-Channelizer-Setup.iss /Oinstaller-output
+        working-directory: ${{ github.workspace }}
+        shell: pwsh
+
+      - name: Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: E-Channelizer-Installer
+          path: installer-output/*.exe
+          retention-days: 30
+
+      - name: Add Installer to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref }}
+          files: installer-output/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Job للتحقق من الكود (Code Quality)
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Run format check
+        run: dotnet format --verify-no-changes E-Channelizer-Clone/EChannelizer.csproj
+        working-directory: ${{ github.workspace }}
+
+      - name: Run static analysis
+        run: |
+          dotnet tool install --global dotnet-format
+          dotnet tool install --global dotnet-outdated-tool
+        working-directory: ${{ github.workspace }}
+
+      - name: Check for outdated packages
+        run: dotnet outdated E-Channelizer-Clone/EChannelizer.csproj || true
+        working-directory: ${{ github.workspace }}

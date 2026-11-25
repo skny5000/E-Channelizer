@@ -1,0 +1,442 @@
+<controls:MetroWindow x:Class="EChannelizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EChannelizer"
+        xmlns:vm="clr-namespace:EChannelizer.ViewModels"
+        xmlns:views="clr-namespace:EChannelizer.Views"
+        xmlns:controls="clr-namespace:EChannelizer.Views.Controls"
+        xmlns:converters="clr-namespace:EChannelizer.Converters"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="E-Channelizer - DVB Channel Editor"
+        Height="900"
+        Width="1400"
+        MinHeight="600"
+        MinWidth="1000"
+        WindowStartupLocation="CenterScreen"
+        Icon="Resources/icon.ico"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+        TitleCharacterCasing="Normal"
+        ShowIconOnTitleBar="True"
+        ShowTitleBar="True"
+        TitleBarHeight="32">
+
+    <controls:MetroWindow.DataContext>
+        <vm:MainViewModel />
+    </controls:MetroWindow.DataContext>
+
+    <controls:MetroWindow.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:ServiceTypeToIconConverter x:Key="ServiceTypeToIconConverter" />
+    </controls:MetroWindow.Resources>
+
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+            <Button ToolTip="Settings" Command="{Binding OpenSettingsCommand}" Style="{StaticResource MahApps.Styles.Button.Win10}">
+                <iconPacks:PackIconMaterialDesign Kind="Cog" Width="16" Height="16" />
+            </Button>
+            <Button ToolTip="Profiles" Command="{Binding OpenProfilesCommand}" Style="{StaticResource MahApps.Styles.Button.Win10}">
+                <iconPacks:PackIconMaterialDesign Kind="AccountMultiple" Width="16" Height="16" />
+            </Button>
+            <Button ToolTip="Help" Command="{Binding ShowHelpCommand}" Style="{StaticResource MahApps.Styles.Button.Win10}">
+                <iconPacks:PackIconMaterialDesign Kind="HelpCircle" Width="16" Height="16" />
+            </Button>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" /> <!-- Ribbon/Toolbar -->
+            <RowDefinition Height="*" />    <!-- Main Content -->
+            <RowDefinition Height="Auto" /> <!-- Status Bar -->
+        </Grid.RowDefinitions>
+
+        <!-- Ribbon Toolbar -->
+        <controls:MetroRibbon Grid.Row="0" x:Name="Ribbon" Title="E-Channelizer">
+            <controls:MetroRibbon.QuickAccessToolBar>
+                <controls:QuickAccessToolBar>
+                    <Button ToolTip="New Repository" Command="{Binding NewRepositoryCommand}" Style="{StaticResource MahApps.Styles.Button.Win10}">
+                        <iconPacks:PackIconMaterialDesign Kind="FilePlus" Width="16" Height="16" />
+                    </Button>
+                    <Button ToolTip="Open Repository" Command="{Binding OpenRepositoryCommand}" Style="{StaticResource MahApps.Styles.Button.Win10}">
+                        <iconPacks:PackIconMaterialDesign Kind="FolderOpen" Width="16" Height="16" />
+                    </Button>
+                    <Button ToolTip="Save Repository" Command="{Binding SaveRepositoryCommand}" Style="{StaticResource MahApps.Styles.Button.Win10}">
+                        <iconPacks:PackIconMaterialDesign Kind="ContentSave" Width="16" Height="16" />
+                    </Button>
+                </controls:QuickAccessToolBar>
+            </controls:MetroRibbon.QuickAccessToolBar>
+
+            <controls:MetroRibbon.ApplicationMenu>
+                <controls:ApplicationMenu>
+                    <controls:ApplicationMenuItem Header="New Repository" Command="{Binding NewRepositoryCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=FilePlus}" />
+                    <controls:ApplicationMenuItem Header="Open Repository" Command="{Binding OpenRepositoryCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=FolderOpen}" />
+                    <controls:ApplicationMenuItem Header="Save" Command="{Binding SaveRepositoryCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=ContentSave}" />
+                    <controls:ApplicationMenuItem Header="Save As" Command="{Binding SaveRepositoryAsCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=ContentSaveOutline}" />
+                    <Separator />
+                    <controls:ApplicationMenuItem Header="Import" Command="{Binding ImportSatellitesCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=Download}" />
+                    <controls:ApplicationMenuItem Header="Export Repository" Command="{Binding ExportRepositoryCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=Upload}" />
+                    <controls:ApplicationMenuItem Header="Export M3U" Command="{Binding ExportM3UCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=PlaylistPlus}" />
+                    <Separator />
+                    <controls:ApplicationMenuItem Header="Settings" Command="{Binding OpenSettingsCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=Cog}" />
+                    <controls:ApplicationMenuItem Header="Profiles" Command="{Binding OpenProfilesCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=AccountMultiple}" />
+                    <Separator />
+                    <controls:ApplicationMenuItem Header="Exit" Command="{Binding ExitCommand}" Icon="{iconPacks:PackIconMaterialDesign Kind=ExitToApp}" />
+                </controls:ApplicationMenu>
+            </controls:MetroRibbon.ApplicationMenu>
+
+            <!-- File Tab -->
+            <controls:MetroRibbonTab Header="File">
+                <controls:MetroRibbonGroup Header="Repository">
+                    <Button Command="{Binding NewRepositoryCommand}" ToolTip="New Repository" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=FilePlus, Size=32}" />
+                    <Button Command="{Binding OpenRepositoryCommand}" ToolTip="Open Repository" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=FolderOpen, Size=32}" />
+                    <Button Command="{Binding SaveRepositoryCommand}" ToolTip="Save" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=ContentSave, Size=32}" />
+                    <Button Command="{Binding SaveRepositoryAsCommand}" ToolTip="Save As" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=ContentSaveOutline, Size=32}" />
+                </controls:MetroRibbonGroup>
+
+                <controls:MetroRibbonGroup Header="Import/Export">
+                    <Button Command="{Binding ImportSatellitesCommand}" ToolTip="Import" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Download, Size=32}" />
+                    <Button Command="{Binding ExportRepositoryCommand}" ToolTip="Export Repository" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Upload, Size=32}" />
+                    <Button Command="{Binding ExportM3UCommand}" ToolTip="Export M3U" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=PlaylistPlus, Size=32}" />
+                </controls:MetroRibbonGroup>
+
+                <controls:MetroRibbonGroup Header="Application">
+                    <Button Command="{Binding OpenSettingsCommand}" ToolTip="Settings" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Cog, Size=32}" />
+                    <Button Command="{Binding OpenProfilesCommand}" ToolTip="Profiles" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=AccountMultiple, Size=32}" />
+                    <Button Command="{Binding ExitCommand}" ToolTip="Exit" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=ExitToApp, Size=32}" />
+                </controls:MetroRibbonGroup>
+            </controls:MetroRibbonTab>
+
+            <!-- Edit Tab -->
+            <controls:MetroRibbonTab Header="Edit">
+                <controls:MetroRibbonGroup Header="Channels">
+                    <Button Command="{Binding EditChannelCommand}" ToolTip="Edit Channel" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Pencil, Size=32}" />
+                    <Button Command="{Binding DeleteChannelsCommand}" ToolTip="Delete Selected" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Delete, Size=32}" />
+                    <Button Command="{Binding PlayChannelCommand}" ToolTip="Play Channel" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=PlayCircle, Size=32}" />
+                </controls:MetroRibbonGroup>
+
+                <controls:MetroRibbonGroup Header="Groups">
+                    <Button Command="{Binding EditGroupCommand}" ToolTip="Edit Group" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=FolderEdit, Size=32}" />
+                    <Button Command="{Binding CreateBouquetsCommand}" ToolTip="Create Bouquets" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=FolderMultiplePlus, Size=32}" />
+                </controls:MetroRibbonGroup>
+
+                <controls:MetroRibbonGroup Header="Advanced">
+                    <Button Command="{Binding AssignEpgCommand}" ToolTip="Assign EPG" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=CalendarClock, Size=32}" />
+                    <Button Command="{Binding AssignLogosCommand}" ToolTip="Assign Logos" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=ImageMultiple, Size=32}" />
+                    <Button Command="{Binding BatchEditEpgCommand}" ToolTip="Batch Edit EPG" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=TableEdit, Size=32}" />
+                </controls:MetroRibbonGroup>
+            </controls:MetroRibbonTab>
+
+            <!-- View Tab -->
+            <controls:MetroRibbonTab Header="View">
+                <controls:MetroRibbonGroup Header="Layout">
+                    <CheckBox Content="Groups" IsChecked="{Binding ShowGroupsPanel, Mode=TwoWay}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                    <CheckBox Content="Transponders" IsChecked="{Binding ShowTranspondersPanel, Mode=TwoWay}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                    <CheckBox Content="Services" IsChecked="{Binding ShowServicesPanel, Mode=TwoWay}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                    <CheckBox Content="Favorites" IsChecked="{Binding ShowFavoritesPanel, Mode=TwoWay}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                    <CheckBox Content="Log" IsChecked="{Binding ShowLogPanel, Mode=TwoWay}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                </controls:MetroRibbonGroup>
+
+                <controls:MetroRibbonGroup Header="Filters">
+                    <CheckBox Content="Favorites Only" Command="{Binding ToggleFavoritesFilterCommand}" IsChecked="{Binding ShowFavoritesOnly, Mode=TwoWay}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                    <CheckBox Content="Scrambled Only" Command="{Binding ToggleScrambledFilterCommand}" IsChecked="{Binding ShowScrambledOnly, Mode=TwoWay}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                    <CheckBox Content="HD Only" Command="{Binding ToggleHDFilterCommand}" IsChecked="{Binding ShowHDOnly, Mode=TwoWay}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                </controls:MetroRibbonGroup>
+
+                <controls:MetroRibbonGroup Header="Sort">
+                    <ComboBox ItemsSource="{Binding ChannelSortOptions}" SelectedItem="{Binding CurrentSort, Mode=TwoWay}"
+                              Style="{StaticResource FilterComboBox}" ToolTip="Sort Channels" />
+                    <ComboBox ItemsSource="{Binding ServiceSortOptions}" SelectedItem="{Binding ServiceSort, Mode=TwoWay}"
+                              Style="{StaticResource FilterComboBox}" ToolTip="Sort Services" />
+                </controls:MetroRibbonGroup>
+            </controls:MetroRibbonTab>
+
+            <!-- Tools Tab -->
+            <controls:MetroRibbonTab Header="Tools">
+                <controls:MetroRibbonGroup Header="Devices">
+                    <Button Command="{Binding ManageDevicesCommand}" ToolTip="Network Devices" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=ServerNetwork, Size=32}" />
+                </controls:MetroRibbonGroup>
+
+                <controls:MetroRibbonGroup Header="Satellites">
+                    <Button Command="{Binding ManageSatellitesCommand}" ToolTip="Manage Satellites" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Satellite, Size=32}" />
+                    <Button Command="{Binding MapSatellitesCommand}" ToolTip="Map Satellites" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=MapMarker, Size=32}" />
+                </controls:MetroRibbonGroup>
+
+                <controls:MetroRibbonGroup Header="Maintenance">
+                    <Button Command="{Binding CleanupCommand}" ToolTip="Cleanup" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Broom, Size=32}" />
+                    <Button Command="{Binding CheckUpdatesCommand}" ToolTip="Check Updates" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Update, Size=32}" />
+                </controls:MetroRibbonGroup>
+            </controls:MetroRibbonTab>
+
+            <!-- Help Tab -->
+            <controls:MetroRibbonTab Header="Help">
+                <controls:MetroRibbonGroup Header="Support">
+                    <Button Command="{Binding ShowHelpCommand}" ToolTip="Help" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=HelpCircle, Size=32}" />
+                    <Button Command="{Binding ShowAboutCommand}" ToolTip="About" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Information, Size=32}" />
+                    <Button Command="{Binding OpenTicketCommand}" ToolTip="Support Ticket" LargeIcon="{iconPacks:PackIconMaterialDesign Kind=Ticket, Size=32}" />
+                </controls:MetroRibbonGroup>
+            </controls:MetroRibbonTab>
+        </controls:MetroRibbon>
+
+        <!-- Main Content Area -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MinWidth="200" MaxWidth="400" /> <!-- Groups Panel -->
+                <ColumnDefinition Width="Auto" /> <!-- Splitter -->
+                <ColumnDefinition Width="*" />       <!-- Channels Panel -->
+                <ColumnDefinition Width="Auto" /> <!-- Splitter -->
+                <ColumnDefinition Width="Auto" MinWidth="250" MaxWidth="400" /> <!-- Details Panel -->
+            </Grid.ColumnDefinitions>
+
+            <!-- Groups/Satellites Tree Panel -->
+            <Grid Grid.Column="0" Visibility="{Binding ShowGroupsPanel, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <ToolBar Grid.Row="0" Style="{StaticResource ToolBarStyle}">
+                    <Label Content="Groups & Satellites" FontWeight="Bold" VerticalAlignment="Center" />
+                    <Separator />
+                    <Button ToolTip="Expand All" Command="{Binding ExpandAllGroupsCommand}" Style="{StaticResource ToolbarButton}">
+                        <iconPacks:PackIconMaterialDesign Kind="ChevronDown" Width="16" Height="16" />
+                    </Button>
+                    <Button ToolTip="Collapse All" Command="{Binding CollapseAllGroupsCommand}" Style="{StaticResource ToolbarButton}">
+                        <iconPacks:PackIconMaterialDesign Kind="ChevronUp" Width="16" Height="16" />
+                    </Button>
+                </ToolBar>
+
+                <TreeView Grid.Row="1" ItemsSource="{Binding Groups}" Style="{StaticResource MetroTreeView}"
+                          SelectedItemChanged="GroupsTreeView_SelectedItemChanged">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource GroupTreeViewItem}">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu Style="{StaticResource MetroContextMenu}">
+                                        <MenuItem Header="Edit Group" Command="{Binding DataContext.EditGroupCommand, RelativeSource={RelativeSource AncestorType=TreeView}}"
+                                                  CommandParameter="{Binding}" Icon="{iconPacks:PackIconMaterialDesign Kind=Pencil}" />
+                                        <MenuItem Header="Add Subgroup" Command="{Binding DataContext.AddSubGroupCommand, RelativeSource={RelativeSource AncestorType=TreeView}}"
+                                                  CommandParameter="{Binding}" Icon="{iconPacks:PackIconMaterialDesign Kind=FolderPlus}" />
+                                        <MenuItem Header="Delete Group" Command="{Binding DataContext.DeleteGroupCommand, RelativeSource={RelativeSource AncestorType=TreeView}}"
+                                                  CommandParameter="{Binding}" Icon="{iconPacks:PackIconMaterialDesign Kind=Delete}" />
+                                        <Separator />
+                                        <MenuItem Header="Expand All" Command="{Binding DataContext.ExpandGroupCommand, RelativeSource={RelativeSource AncestorType=TreeView}}"
+                                                  CommandParameter="{Binding}" Icon="{iconPacks:PackIconMaterialDesign Kind=ChevronDown}" />
+                                        <MenuItem Header="Collapse All" Command="{Binding DataContext.CollapseGroupCommand, RelativeSource={RelativeSource AncestorType=TreeView}}"
+                                                  CommandParameter="{Binding}" Icon="{iconPacks:PackIconMaterialDesign Kind=ChevronUp}" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding SubGroups}">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterialDesign Kind="{Binding Source, Converter={StaticResource BouquetSourceToIconConverter}}"
+                                                                 Width="16" Height="16" Margin="0,0,4,0"
+                                                                 Foreground="{Binding Source, Converter={StaticResource BouquetSourceToColorConverter}}" />
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding ChannelCount, StringFormat=' ({0})'}" VerticalAlignment="Center"
+                                          Foreground="{DynamicResource MahApps.Brushes.Gray3}" FontSize="11" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Grid>
+
+            <GridSplitter Grid.Column="1" Width="4" HorizontalAlignment="Center"
+                          Visibility="{Binding ShowGroupsPanel, Converter={StaticResource BoolToVisibilityConverter}}" />
+
+            <!-- Channels Panel -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Channel Toolbar/Search -->
+                <ToolBar Grid.Row="0" Style="{StaticResource ToolBarStyle}">
+                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Command="{Binding SearchChannelsCommand}"
+                             Style="{StaticResource SearchTextBox}"
+                             mah:TextBoxHelper.Watermark="Search channels..."
+                             mah:TextBoxHelper.ClearTextButton="True" />
+                    <Button Command="{Binding ClearSearchCommand}" ToolTip="Clear Search" Style="{StaticResource ToolbarButton}">
+                        <iconPacks:PackIconMaterialDesign Kind="CloseCircle" Width="16" Height="16" />
+                    </Button>
+                    <Separator />
+                    <ComboBox ItemsSource="{Binding ChannelSortOptions}" SelectedItem="{Binding CurrentSort, Mode=TwoWay}"
+                              Style="{StaticResource FilterComboBox}" ToolTip="Sort" />
+                    <Separator />
+                    <CheckBox Content="Favorites" IsChecked="{Binding ShowFavoritesOnly, Mode=TwoWay}"
+                              Command="{Binding ToggleFavoritesFilterCommand}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                    <CheckBox Content="Scrambled" IsChecked="{Binding ShowScrambledOnly, Mode=TwoWay}"
+                              Command="{Binding ToggleScrambledFilterCommand}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                    <CheckBox Content="HD" IsChecked="{Binding ShowHDOnly, Mode=TwoWay}"
+                              Command="{Binding ToggleHDFilterCommand}" Style="{StaticResource MahApps.Styles.CheckBox}" />
+                </ToolBar>
+
+                <!-- Channels DataGrid -->
+                <DataGrid Grid.Row="1" ItemsSource="{Binding Channels}" Style="{StaticResource MetroDataGrid}"
+                          SelectedItem="{Binding SelectedChannel, Mode=TwoWay}"
+                          SelectionMode="Extended"
+                          RowStyle="{StaticResource ChannelRowStyle}"
+                          VirtualizingPanel.IsVirtualizing="True"
+                          VirtualizingPanel.VirtualizationMode="Recycling"
+                          EnableRowVirtualization="True"
+                          EnableColumnVirtualization="True"
+                          ContextMenuOpening="ChannelsDataGrid_ContextMenuOpening">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="" Width="30" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn Header="#" Binding="{Binding Number}" Width="50" IsReadOnly="True" />
+                        <DataGridTemplateColumn Header="" Width="30" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <iconPacks:PackIconMaterialDesign Kind="{Binding ServiceType, Converter={StaticResource ServiceTypeToIconConverter}}"
+                                                                     Width="16" Height="16"
+                                                                     Foreground="{Binding IsScrambled, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Red;Green}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Provider" Binding="{Binding Provider}" Width="120" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Satellite" Binding="{Binding Satellite}" Width="100" IsReadOnly="True" />
+                        <DataGridTemplateColumn Header="Freq" Width="80" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Frequency, Converter={StaticResource FrequencyToStringConverter}}"
+                                               HorizontalAlignment="Right" Margin="0,0,4,0" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Pol" Width="40" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Polarization, Converter={StaticResource PolarizationToStringConverter}}"
+                                               HorizontalAlignment="Center" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="SR" Width="60" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SymbolRate, Converter={StaticResource SymbolRateToStringConverter}}"
+                                               HorizontalAlignment="Right" Margin="0,0,4,0" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="FEC" Binding="{Binding FEC}" Width="50" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mod" Binding="{Binding Modulation}" Width="60" IsReadOnly="True" />
+                        <DataGridTextColumn Header="SID" Binding="{Binding ServiceId}" Width="50" IsReadOnly="True" />
+                        <DataGridTemplateColumn Header="Flags" Width="80" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Flags, Converter={StaticResource ServiceFlagsToStringConverter}}"
+                                               ToolTip="{Binding Flags}" FontSize="10" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Marker" Width="40" IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Ellipse Width="12" Height="12" HorizontalAlignment="Center"
+                                             Fill="{Binding Marker, Converter={StaticResource ChannelMarkerToColorConverter}}"
+                                             Stroke="{DynamicResource MahApps.Brushes.Gray5}" StrokeThickness="0.5"
+                                             Visibility="{Binding IsMarker, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu Style="{StaticResource MetroContextMenu}">
+                            <MenuItem Header="Edit Channel" Command="{Binding EditChannelCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=Pencil}" />
+                            <MenuItem Header="Play Channel" Command="{Binding PlayChannelCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=PlayCircle}" />
+                            <Separator />
+                            <MenuItem Header="Add to Favorites" Command="{Binding AddToFavoritesCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=Star}" />
+                            <MenuItem Header="Remove from Favorites" Command="{Binding RemoveFromFavoritesCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=StarOutline}" />
+                            <Separator />
+                            <MenuItem Header="Copy" Command="{Binding CopyChannelsCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=ContentCopy}" />
+                            <MenuItem Header="Paste" Command="{Binding PasteChannelsCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=ContentPaste}" />
+                            <Separator />
+                            <MenuItem Header="Delete" Command="{Binding DeleteChannelsCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=Delete}" />
+                            <Separator />
+                            <MenuItem Header="Select All" Command="{Binding SelectAllChannelsCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=CheckboxMarkedCircle}" />
+                            <MenuItem Header="Deselect All" Command="{Binding DeselectAllChannelsCommand}"
+                                      Icon="{iconPacks:PackIconMaterialDesign Kind=CheckboxBlankCircle}" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
+            </Grid>
+
+            <GridSplitter Grid.Column="3" Width="4" HorizontalAlignment="Center" />
+
+            <!-- Details Panel -->
+            <Grid Grid.Column="4" Visibility="{Binding ShowDetailsPanel, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <ToolBar Grid.Row="0" Style="{StaticResource ToolBarStyle}">
+                    <Label Content="Channel Details" FontWeight="Bold" VerticalAlignment="Center" />
+                </ToolBar>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="8">
+                        <!-- Channel info would go here -->
+                        <TextBlock Text="Select a channel to view details" Foreground="{DynamicResource MahApps.Brushes.Gray3}"
+                                   VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="2" Style="{StaticResource StatusBarStyle}">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" />
+            </StatusBarItem>
+            <Separator />
+            <StatusBarItem>
+                <ProgressBar Value="{Binding ProgressValue}" IsIndeterminate="{Binding IsProgressIndeterminate}"
+                             Style="{StaticResource MetroProgressBar}" Width="150" Height="16"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisibilityConverter}}" />
+            </StatusBarItem>
+            <Separator />
+            <StatusBarItem>
+                <TextBlock Text="{Binding TotalChannels, StringFormat='Total: {0}'}" VerticalAlignment="Center" FontSize="11" />
+            </StatusBarItem>
+            <Separator />
+            <StatusBarItem>
+                <TextBlock Text="{Binding VisibleChannels, StringFormat='Visible: {0}'}" VerticalAlignment="Center" FontSize="11" />
+            </StatusBarItem>
+            <Separator />
+            <StatusBarItem>
+                <TextBlock Text="{Binding FavoriteChannels, StringFormat='Favorites: {0}'}" VerticalAlignment="Center" FontSize="11" />
+            </StatusBarItem>
+            <Separator />
+            <StatusBarItem>
+                <TextBlock Text="{Binding ScrambledChannels, StringFormat='Scrambled: {0}'}" VerticalAlignment="Center" FontSize="11" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</controls:MetroWindow>

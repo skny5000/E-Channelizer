@@ -1,0 +1,298 @@
+<controls:MetroWindow x:Class="EChannelizer.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="Settings"
+        Height="650"
+        Width="700"
+        WindowStartupLocation="CenterOwner"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+        ShowMinButton="False">
+
+    <controls:MetroWindow.DataContext>
+        <local:SettingsViewModel />
+    </controls:MetroWindow.DataContext>
+
+    <Grid>
+        <TabControl Margin="0">
+            <!-- General Tab -->
+            <TabItem Header="General">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+
+                        <GroupBox Header="Language & Appearance" Margin="0,0,0,12">
+                            <Grid Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Language:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}" Grid.Row="0" Grid.Column="1" Margin="0,4" />
+
+                                <TextBlock Text="Theme:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding Themes}" SelectedItem="{Binding Theme}" Grid.Row="1" Grid.Column="1" Margin="0,4" />
+
+                                <TextBlock Text="Accent Color:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding AccentColors}" SelectedItem="{Binding AccentColor}" Grid.Row="2" Grid.Column="1" Margin="0,4" />
+
+                                <TextBlock Text="Font Family:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding FontFamilies}" SelectedItem="{Binding FontFamily}" Grid.Row="3" Grid.Column="1" Margin="0,4" />
+
+                                <TextBlock Text="Font Size:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <Slider Minimum="8" Maximum="24" Value="{Binding FontSize}" TickFrequency="1" IsSnapToTickEnabled="True" Grid.Row="4" Grid.Column="1" Margin="0,4" />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="UI Options" Margin="0,0,0,12">
+                            <StackPanel Margin="8">
+                                <CheckBox Content="Show Tooltips" IsChecked="{Binding ShowToolTips}" Margin="0,4" />
+                                <CheckBox Content="Show Keyboard Shortcuts" IsChecked="{Binding ShowKeyboardShortcuts}" Margin="0,4" />
+                                <CheckBox Content="Auto-assign Channel Numbers" IsChecked="{Binding AutoAssignNumbers}" Margin="0,4" />
+                                <CheckBox Content="Auto-assign EPG" IsChecked="{Binding AutoAssignEpg}" Margin="0,4" />
+                                <CheckBox Content="Auto-download Logos" IsChecked="{Binding AutoDownloadLogos}" Margin="0,4" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Logos Folder" Margin="0,0,0,12">
+                            <StackPanel Margin="8" Orientation="Horizontal">
+                                <TextBox Text="{Binding LogosFolder}" Width="450" VerticalAlignment="Center" IsReadOnly="True" />
+                                <Button Content="Browse..." Command="{Binding BrowseLogosFolderCommand}" Margin="8,0,0,0" Padding="12,4" VerticalAlignment="Center" />
+                                <Button Content="Open Folder" Command="{Binding OpenLogosFolderCommand}" Margin="8,0,0,0" Padding="12,4" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Channels Tab -->
+            <TabItem Header="Channels">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <GroupBox Header="Channel Defaults" Margin="0,0,0,12">
+                            <Grid Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Max Logo Size (KB):" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding MaxLogoSize}" Grid.Row="0" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+
+                                <TextBlock Text="Logo Format:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding LogoFormats}" SelectedItem="{Binding LogoFormat}" Grid.Row="1" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+
+                                <TextBlock Text="Default Sort:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding ChannelSortOptions}" SelectedItem="{Binding DefaultChannelSort}" Grid.Row="2" Grid.Column="1" Margin="0,4" Width="150" HorizontalAlignment="Left" />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="Import Defaults" Margin="0,0,0,12">
+                            <StackPanel Margin="8">
+                                <CheckBox Content="Create Backup on Import" IsChecked="{Binding BackupBeforeImport}" Margin="0,4" />
+                                <CheckBox Content="Create Groups on Import" IsChecked="{Binding CreateGroupsOnImport}" Margin="0,4" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Streaming Tab -->
+            <TabItem Header="Streaming">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <GroupBox Header="Media Player" Margin="0,0,0,12">
+                            <Grid Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Player Path:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding PlayerPath}" Grid.Row="0" Grid.Column="1" Margin="0,4" VerticalAlignment="Center" />
+                                <Button Grid.Row="0" Grid.Column="2" Content="Browse..." Command="{Binding BrowsePlayerCommand}" Margin="8,4,0,4" Padding="12,4" VerticalAlignment="Center" />
+
+                                <TextBlock Text="Arguments:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding PlayerArguments}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,4" />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="Streamlink" Margin="0,0,0,12">
+                            <StackPanel Margin="8" Orientation="Horizontal">
+                                <TextBox Text="{Binding StreamlinkPath}" Width="450" VerticalAlignment="Center" IsReadOnly="True" />
+                                <Button Content="Browse..." Command="{Binding BrowseStreamlinkCommand}" Margin="8,0,0,0" Padding="12,4" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </GroupBox>
+
+                        <GroupBox Header="Buffer Settings" Margin="0,0,0,12">
+                            <Grid Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Default Buffering:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding BufferingOptions}" SelectedItem="{Binding DefaultBuffering}" Grid.Row="0" Grid.Column="1" Margin="0,4" Width="150" HorizontalAlignment="Left" />
+
+                                <TextBlock Text="Buffer Size (KB):" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding DefaultBufferSize}" Grid.Row="1" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+
+                                <TextBlock Text="Timeout (seconds):" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding StreamTimeout}" Grid.Row="2" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+                            </Grid>
+                        </GroupBox>
+
+                        <Button Content="Test Player" Command="{Binding TestPlayerCommand}" Margin="8,0,0,0" Padding="12,4" HorizontalAlignment="Left" />
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Network Tab -->
+            <TabItem Header="Network">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <GroupBox Header="Connection Timeouts" Margin="0,0,0,12">
+                            <Grid Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Connection Timeout (s):" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding ConnectionTimeout}" Grid.Row="0" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+
+                                <TextBlock Text="Operation Timeout (s):" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding OperationTimeout}" Grid.Row="1" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+
+                                <CheckBox Content="Auto-connect on startup" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding AutoConnect}" Margin="0,4" VerticalAlignment="Center" />
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- EPG Tab -->
+            <TabItem Header="EPG">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <GroupBox Header="EPG Settings" Margin="0,0,0,12">
+                            <Grid Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Text="Update Interval (hours):" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding EpgUpdateInterval}" Grid.Row="0" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+
+                                <TextBlock Text="Retention Days:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding EpgRetentionDays}" Grid.Row="1" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+
+                                <CheckBox Content="Auto-update EPG" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" IsChecked="{Binding EpgAutoUpdate}" Margin="0,4" VerticalAlignment="Center" />
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Advanced Tab -->
+            <TabItem Header="Advanced">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <GroupBox Header="Logging" Margin="0,0,0,12">
+                            <Grid Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <CheckBox Content="Enable Logging" IsChecked="{Binding EnableLogging}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4" VerticalAlignment="Center" />
+
+                                <TextBlock Text="Log Level:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding LogLevels}" SelectedItem="{Binding LogLevel}" Grid.Row="1" Grid.Column="1" Margin="0,4" Width="150" HorizontalAlignment="Left" />
+
+                                <TextBlock Text="Max Log Files:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <TextBox Text="{Binding MaxLogFiles}" Grid.Row="2" Grid.Column="1" Margin="0,4" Width="100" HorizontalAlignment="Left" />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="Updates" Margin="0,0,0,12">
+                            <Grid Margin="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <CheckBox Content="Check for Updates" IsChecked="{Binding CheckForUpdates}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4" VerticalAlignment="Center" />
+                                <CheckBox Content="Auto-update" IsChecked="{Binding AutoUpdate}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,4" VerticalAlignment="Center" />
+
+                                <TextBlock Text="Update Channel:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="0,4" />
+                                <ComboBox ItemsSource="{Binding UpdateChannels}" SelectedItem="{Binding UpdateChannel}" Grid.Row="2" Grid.Column="1" Margin="0,4" Width="150" HorizontalAlignment="Left" />
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox Header="Actions" Margin="0,0,0,12">
+                            <StackPanel Margin="8">
+                                <Button Content="Reset to Defaults" Command="{Binding ResetToDefaultsCommand}" Padding="12,4" HorizontalAlignment="Left" />
+                                <Button Content="Open Log Folder" Command="{Binding BrowseLogFolderCommand}" Margin="0,8,0,0" Padding="12,4" HorizontalAlignment="Left" />
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <!-- Bottom Buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="16">
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="0,0,8,16" />
+            <Button Content="Save" Command="{Binding OKCommand}" Width="100"
+                    Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}" IsDefault="True" Margin="0,0,0,16" />
+        </StackPanel>
+    </Grid>
+</controls:MetroWindow>

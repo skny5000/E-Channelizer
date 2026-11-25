@@ -1,0 +1,92 @@
+<controls:MetroWindow x:Class="EChannelizer.Views.MapSatellitesWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="Map Satellites"
+        Height="600"
+        Width="1000"
+        WindowStartupLocation="CenterOwner"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}">
+
+    <controls:MetroWindow.DataContext>
+        <local:MapSatellitesViewModel />
+    </controls:MetroWindow.DataContext>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Download Section -->
+        <GroupBox Grid.Row="0" Header="Online Satellite Database" Margin="0,0,0,16">
+            <Grid Margin="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <TextBox Text="{Binding DownloadUrl, UpdateSourceTrigger=PropertyChanged}" Grid.Column="0" VerticalAlignment="Center" IsReadOnly="True" />
+                <Button Grid.Column="1" Content="Download" Command="{Binding DownloadSatellitesCommand}" Margin="8,0,0,0" Padding="12,4" VerticalAlignment="Center" />
+            </Grid>
+        </GroupBox>
+
+        <!-- Split Panel -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Web Satellites -->
+            <GroupBox Grid.Column="0" Header="Available Satellites (Online)">
+                <DataGrid ItemsSource="{Binding WebSatellites}" SelectedItem="{Binding SelectedWebSatellite, Mode=TwoWay}"
+                          AutoGenerateColumns="False" SelectionMode="Extended"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          Style="{StaticResource MetroDataGrid}">
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Header="" Binding="{Binding IsSelected}" Width="40" />
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Position" Binding="{Binding PositionDisplay}" Width="100" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Region" Binding="{Binding Region}" Width="120" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Country" Binding="{Binding Country}" Width="120" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0">
+                <Button Content="Import Selected ►" Command="{Binding ImportSelectedCommand}" Width="140" Margin="0,0,0,8" />
+                <Button Content="Import All ►" Command="{Binding ImportAllCommand}" Width="140" Margin="0,0,0,8"
+                        Style="{StaticResource MahApps.Styles.Button.Dialogs.Accent}" />
+                <Separator Margin="0,8" />
+                <Button Content="Map Transponders" Command="{Binding MapTranspondersCommand}" Width="140" />
+            </StackPanel>
+
+            <!-- Local Satellites -->
+            <GroupBox Grid.Column="2" Header="Local Satellites (Repository)">
+                <DataGrid ItemsSource="{Binding LocalSatellites}" SelectedItem="{Binding SelectedLocalSatellite, Mode=TwoWay}"
+                          AutoGenerateColumns="False" SelectionMode="Single"
+                          CanUserAddRows="False" CanUserDeleteRows="False"
+                          Style="{StaticResource MetroDataGrid}">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Position" Binding="{Binding PositionDisplay}" Width="100" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Transponders" Binding="{Binding TransponderCount}" Width="100" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Channels" Binding="{Binding ChannelCount}" Width="80" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Close" Command="{Binding CancelCommand}" Width="100" />
+        </StackPanel>
+    </Grid>
+</controls:MetroWindow>

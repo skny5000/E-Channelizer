@@ -89,14 +89,14 @@ jobs:
 
       # 8. Upload artifacts (للرفع في Actions artifacts)
       - name: Upload self-contained executable
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: E-Channelizer-SelfContained
           path: E-Channelizer-Clone/publish/selfcontained/E-Channelizer.exe
           retention-days: 30
 
       - name: Upload portable executable
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: E-Channelizer-Portable
           path: E-Channelizer-Clone/publish/portable/E-Channelizer.exe
@@ -172,7 +172,7 @@ jobs:
         shell: pwsh
 
       - name: Upload Installer
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: E-Channelizer-Installer
           path: installer-output/*.exe
